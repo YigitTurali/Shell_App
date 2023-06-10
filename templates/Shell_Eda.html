@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Royal Dutch Shell - Explanatory Data Analysis</title>
+    <style>
+        /* Add your custom styles here */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }
+
+        .center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #d6aa18;
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        input[type="file"] {
+            margin-bottom: 10px;
+            border: none;
+            padding: 10px 20px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            color: #d6aa18;
+        }
+
+        input[type="submit"] {
+            border: none;
+            padding: 10px 20px;
+            background-color: #d6aa18;
+            color: #fff;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .box {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+            background-color: #fff6e6;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #d6aa18;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        embed {
+            width: 100%;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+
+        /* Red Accent */
+        .accent {
+            color: #c0392b;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #c0392b;
+        }
+        .logo {
+            width: 150px; /* Adjust the width as desired */
+            height: auto; /* Maintain aspect ratio */
+        }
+    </style>
+</head>
+<body>
+<div class="center">
+    <img src="/static/shell_logo.png" alt="Royal Dutch Shell Logo" class="logo">
+</div>
+<div class="center">
+    <h1 class="accent">Royal Dutch Shell - Explanatory Data Analysis</h1>
+</div>
+
+<div class="container">
+    <form action="eda" method="post" enctype="multipart/form-data">
+        <input type="file" id="csv-file" name="csv-file" accept=".csv" required><br>
+        <input type="submit" onclick="analyzeData()" value="Start Analysis">
+    </form>
+
+    {% if response.acfpacfPlotPath %}
+    <div id="acfPacfBox" class="box">
+        <h2 class="accent">ACF/PACF Plots</h2>
+        <img src="{{ response.acfpacfPlotPath }}" alt="ACF/PACF Plot">
+    </div>
+    {% endif %}
+
+    {% if response.seasonalDecompPlotPath %}
+    <div id="seasonalDecompBox" class="box">
+        <h2 class="accent">Seasonal Decomposition</h2>
+        <embed src="{{ response.seasonalDecompPlotPath }}" width="1000" height="200"></embed>
+    </div>
+    {% endif %}
+
+    {% if response.pandasInfoDescribe %}
+    <div id="pandasInfoDescribeBox" class="box">
+        <h2 class="accent">Pandas Info and Describe</h2>
+        <embed src="{{ response.pandasInfoDescribe }}" width="500" height="350"></embed>
+    </div>
+    {% endif %}
+
+    {% if response.meanStdPlotPath %}
+    <div id="meanStdBox" class="box">
+        <h2 class="accent">Mean and Standard Deviation Plot</h2>
+        <img src="{{ response.meanStdPlotPath }}" alt="Mean and Standard Deviation Plot">
+    </div>
+    {% endif %}
+
+    {% if response.dickeyFullerTest %}
+    <div id="dickeyFullerBox" class="box">
+        <h2 class="accent">Dickey Fuller Test</h2>
+        <embed src="{{ response.dickeyFullerTest }}" width="300" height="200"></embed>
+    </div>
+    {% endif %}
+
+    {% if response.orderedPacfAcfPlotsPath %}
+    <div id="orderedPacfAcfBox" class="box">
+        <h2 class="accent">Ordered PACF/ACF Graphs</h2>
+        <img src="{{ response.orderedPacfAcfPlotsPath[0] }}" alt="Order-0 PACF/ACF Graphs">
+        <img src="{{ response.orderedPacfAcfPlotsPath[1] }}" alt="Order-1 PACF/ACF Graphs">
+        <img src="{{ response.orderedPacfAcfPlotsPath[2] }}" alt="Order-2 PACF/ACF Graphs">
+    </div>
+    {% endif %}
+</div>
+</body>
+</html>

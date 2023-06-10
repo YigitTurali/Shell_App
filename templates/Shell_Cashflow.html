@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cashflow Forecast</title>
+    <style>
+        /* Add your custom styles here */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }
+
+        .center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #d6aa18;
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        input[type="file"],
+        input[type="checkbox"],
+        input[type="text"],
+        input[type="date"],
+        input[type="submit"] {
+            margin-bottom: 10px;
+            border: none;
+            padding: 10px 20px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            color: #d6aa18;
+        }
+
+        input[type="submit"] {
+            background-color: #d6aa18;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .parameter-box {
+            display: none;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+
+        .parameter-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .parameter-row label {
+            flex-basis: 70%;
+        }
+
+        .parameter-row input[type="text"] {
+            flex-basis: 70%;
+            width: 100%;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+        }
+
+        /* Red Accent */
+        .accent {
+            color: #c0392b;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #c0392b;
+        }
+
+        .logo {
+            width: 150px; /* Adjust the width as desired */
+            height: auto; /* Maintain aspect ratio */
+        }
+
+    </style>
+</head>
+<body>
+<div class="center">
+    <img src="/static/shell_logo.png" alt="Royal Dutch Shell Logo" class="logo">
+</div>
+<div class="center">
+    <h1 class="accent">Cashflow Forecast</h1>
+</div>
+<div class="center">
+    <div class="container">
+        <form action="forecast" method="post" enctype="multipart/form-data">
+            <label for="csv-file">1. Upload Training CSV File:</label><br>
+            <input type="file" id="csv-file" name="csv-file" accept=".csv" required><br>
+
+            <div class="checkbox-container">
+                <label for="grid-search-lightgbm">2. Grid Search for LightGBM:</label>
+                <input type="checkbox" id="grid-search-lightgbm" name="grid-search-lightgbm">
+            </div>
+
+            <div class="checkbox-container">
+                <label for="grid-search-arima">3. Grid Search for SARIMAX:</label>
+                <input type="checkbox" id="grid-search-arima" name="grid-search-arima">
+            </div>
+
+            <label for="model-selection">4. Select Model:</label><br>
+            <select id="model-selection" name="model-selection" required>
+                <option value="" disabled selected>Select Model</option>
+                <option value="ensemble">Ensemble Model</option>
+                <option value="lightgbm">LightGBM Model</option>
+                <option value="sarimax">SARIMAX Model</option>
+            </select><br>
+
+            <div id="sarimax-parameters-box" class="parameter-box">
+                <label for="sarimax-parameters-box">5. SARIMAX Parameters:</label><br>
+                <div id="order" class="parameter-row">
+                    <label for="order">Order: </label><br>
+                    <label for="p-value-1">p value: </label>
+                    <input type="text" id="p-value-1" name="p-value-1"><br>
+
+                    <label for="q-value-1">q value: </label>
+                    <input type="text" id="q-value-1" name="q-value-1"><br>
+
+                    <label for="d-value-1">d value: </label>
+                    <input type="text" id="d-value-1" name="d-value-1"><br>
+                </div>
+
+                <div id="seasonal_order" class="parameter-row">
+                    <label for="seasonal_order">Seasonal Order: </label><br>
+                    <label for="P-value-2">P value: </label>
+                    <input type="text" id="P-value-2" name="P-value-2"><br>
+
+                    <label for="D-value-2">D value: </label>
+                    <input type="text" id="D-value-2" name="D-value-2"><br>
+
+                    <label for="Q-value-2">Q value: </label>
+                    <input type="text" id="Q-value-2" name="Q-value-2"><br>
+
+                    <label for="s-value-2">s value: </label>
+                    <input type="text" id="s-value-2" name="s-value-2"><br>
+                </div>
+            </div>
+
+            <div id="lightgbm-parameters-box" class="parameter-box">
+                <label for="lightgbm-parameters-box">6. LightGBM Parameters:</label><br>
+                <div id="first_params" class="parameter-row">
+                    <label for="num_leaves"> num_leaves: </label>
+                    <input type="text" id="num_leaves" name="num_leaves"><br>
+
+                    <label for="max_depth"> max_depth: </label>
+                    <input type="text" id="max_depth" name="max_depth"><br>
+
+                    <label for="learning_rate"> learning_rate: </label>
+                    <input type="text" id="learning_rate" name="learning_rate"><br>
+
+                    <label for="subsample"> subsample: </label>
+                    <input type="text" id="subsample" name="subsample"><br>
+
+                    <label for="colsample_bytree"> colsample_bytree: </label>
+                    <input type="text" id="colsample_bytree" name="colsample_bytree"><br>
+                </div>
+
+                <div id="second_params" class="parameter-row">
+                    <label for="reg_alpha"> reg_alpha: </label>
+                    <input type="text" id="reg_alpha" name="reg_alpha"><br>
+
+                    <label for="reg_lambda"> reg_lambda: </label>
+                    <input type="text" id="reg_lambda" name="reg_lambda"><br>
+
+                    <label for="n_estimators"> n_estimators: </label>
+                    <input type="text" id="n_estimators" name="n_estimators"><br>
+
+                    <label for="random_state"> random_state: </label>
+                    <input type="text" id="random_state" name="random_state"><br>
+
+                    <label for="num_iterations"> num_iterations:</label>
+                    <input type="text" id="num_iterations" name="num_iterations"><br>
+                </div>
+            </div>
+
+            <label for="training-dates">7. Training Start/End Dates:</label><br>
+            <label for="training-dates">Training Start/End Dates for SARIMAX:</label><br>
+            <input type="date" id="training-start-date-sarimax" name="training-start-date-sarimax"required>
+            <input type="date" id="training-end-date-sarimax" name="training-end-date-sarimax" ><br>
+            <label for="training-dates">Training Start/End Dates for LightGBM:</label><br>
+            <input type="date" id="training-start-date-lightgbm" name="training-start-date-lightgbm" required>
+            <input type="date" id="training-end-date-lightgbm" name="training-end-date-lightgbm"><br>
+
+            <label for="test-dates">8. Test Start/End Dates:</label><br>
+            <input type="date" id="test-start-date" name="test-start-date" required>
+            <input type="date" id="test-end-date" name="test-end-date" required><br>
+
+            <input type="hidden" id="analysis-flag" name="analysis-flag" value="False">
+            <input type="submit" onclick="openAnalysisSite()" value="Explanatory Data Analysis">
+            <input type="submit" value="Forecast">
+        </form>
+
+    </div>
+    <script>
+        function openAnalysisSite() {
+            document.getElementById('analysis-flag').value = 'True';
+        }
+
+        document.getElementById('model-selection').addEventListener('change', function () {
+            var sarimaxParamsBox = document.getElementById('sarimax-parameters-box');
+            var lightgbmParamsBox = document.getElementById('lightgbm-parameters-box');
+
+            if (this.value === 'grid-search-lightgbm' || this.value === 'lightgbm') {
+                sarimaxParamsBox.style.display = 'none';
+                lightgbmParamsBox.style.display = 'block';
+            } else if (this.value === 'grid-search-arima' || this.value === 'sarimax') {
+                sarimaxParamsBox.style.display = 'block';
+                lightgbmParamsBox.style.display = 'none';
+            } else if (this.value === 'ensemble') {
+                sarimaxParamsBox.style.display = 'block';
+                lightgbmParamsBox.style.display = 'block';
+            } else {
+                sarimaxParamsBox.style.display = 'block';
+                lightgbmParamsBox.style.display = 'block';
+            }
+        });
+
+        document.getElementById('grid-search-lightgbm').addEventListener('change', function () {
+            var lightgbmParams = document.querySelectorAll('#first_params input, #second_params input');
+            lightgbmParams.forEach(function (param) {
+                param.disabled = this.checked;
+
+                if (this.checked) {
+                    param.value = "";
+                }
+            }, this);
+        });
+
+        document.getElementById('grid-search-arima').addEventListener('change', function () {
+            var sarimaxParams = document.querySelectorAll('#order input, #seasonal_order input');
+            sarimaxParams.forEach(function (param) {
+                param.disabled = this.checked;
+
+                if (this.checked) {
+                    param.value = "";
+                }
+            }, this);
+        });
+    </script>
+</div>
+</body>
+</html>
