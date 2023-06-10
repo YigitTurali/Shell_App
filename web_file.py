@@ -2,7 +2,7 @@ import io
 import json
 import os
 import sys
-
+import webbrowser
 import pandas as pd
 from flask import Flask, request, render_template, redirect
 
@@ -358,4 +358,5 @@ def forecast_start():
 
 
 if __name__ == '__main__':
+    webbrowser.open('http://localhost:5000')
     app.run()
