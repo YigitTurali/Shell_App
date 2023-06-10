@@ -18,7 +18,7 @@ def main():
         sb_c1, sb_c2, sb_c3 = st.columns([1, 3, 1])
         with image_c2:
             st.image(
-                "https://github.com/YigitTurali/Shell_App/blob/2448bc79211378ab8717abcf56b78ca8ba03a77f/static/shell_logo.png",
+                "https://github.com/YigitTurali/Shell_App/blob/2448bc79211378ab8717abcf56b78ca8ba03a77f/static/shell_logo.png?raw=true",
                 width=200, use_column_width="auto")
         with title_c2:
             st.title("Royal Dutch Shell")
