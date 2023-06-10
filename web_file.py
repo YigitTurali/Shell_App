@@ -12,7 +12,7 @@ from Shell_LightGBM import Shell_LGBM
 from Shell_SARIMAX import Shell_SARIMAX
 
 app = Flask(__name__)
-
+webbrowser.open('http://127.0.0.1:5000')
 console_output = []
 progress = 0
 is_training_complete = False
@@ -358,5 +358,4 @@ def forecast_start():
 
 
 if __name__ == '__main__':
-    webbrowser.open('http://localhost:5000')
     app.run()
