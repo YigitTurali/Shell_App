@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Royal Dutch Shell - Explanatory Data Analysis</title>
+    <style>
+        /* Add your custom styles here */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }
+
+        .center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #d6aa18;
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        input[type="file"] {
+            margin-bottom: 10px;
+            border: none;
+            padding: 10px 20px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            color: #d6aa18;
+        }
+
+        input[type="submit"] {
+            border: none;
+            padding: 10px 20px;
+            background-color: #d6aa18;
+            color: #fff;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .box {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+            background-color: #fff6e6;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #d6aa18;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        .embed-container {
+            display: none;
+        }
+
+        /* Red Accent */
+        .accent {
+            color: #c0392b;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #c0392b;
+        }
+
+        .logo {
+            width: 150px; /* Adjust the width as desired */
+            height: auto; /* Maintain aspect ratio */
+        }
+
+        /* Progress bar styles */
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #f2f2f2;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar-inner {
+            height: 100%;
+            background-color: #d6aa18;
+            border-radius: 10px;
+            transition: width 0.3s ease-in-out;
+        }
+
+        .csv-download {
+            text-align: center;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .csv-download a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #d6aa18;
+            color: #fff;
+            font-weight: bold;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        .console-output {
+            background-color: #fff6e6;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+            text-align: left;
+            padding: 20px; /* Adjust the padding as desired */
+        }
+    </style>
+</head>
+<body>
+    <div class="center">
+        <img src="/static/shell_logo.png" alt="Royal Dutch Shell Logo" class="logo">
+    </div>
+    <div class="center">
+        <h1 class="accent">Royal Dutch Shell - Forecast</h1>
+    </div>
+
+    <div class="container">
+        <form action="forecast_start" method="post" enctype="multipart/form-data">
+            <input type="submit" onclick="startTraining()" value="Start Training">
+        </form>
+        {% if response.console_output %}
+        <div id="Console Output" class="box">
+            <h2 class="accent">Training Console</h2>
+            <div class="embed-container">
+                <embed id="console-embed" src="{{ response.console_output }}" width=700 height=auto></embed>
+            </div>
+        </div>
+        {% endif %}
+        <!-- Progress bar -->
+        <div class="progress-bar">
+            <div id="progress-bar-inner" class="progress-bar-inner"></div>
+        </div>
+
+        <div class="csv-download">
+            {% if response.csv_url %}
+                <a href="{{ response.csv_url }}" download>Download Forecast CSV File</a>
+            {% endif %}
+        </div>
+    </div>
+
+<script>
+    function startTraining() {
+        // Perform actions when Start Training button is clicked
+        // For example, you can make an AJAX request to start the training process on the server-side
+        // And update the console output and progress bar dynamically
+    }
+
+    // Get the response value indicating whether to show or hide the embedding
+    const responseValue = "{{ response.is_training_complete }}";
+
+    // Get the embed container element
+    const embedContainer = document.querySelector('.embed-container');
+    const csvDownload = document.querySelector('.csv-download');
+
+    // Hide or show the embed container and CSV download section based on the response value
+    if (responseValue === "1") {
+        embedContainer.style.display = 'block';
+        csvDownload.style.display = 'block';
+    } else {
+        embedContainer.style.display = 'none';
+        csvDownload.style.display = 'none';
+    }
+</script>
+
+</body>
+</html>
