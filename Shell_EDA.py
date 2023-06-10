@@ -48,10 +48,8 @@ class Shell_EDA:
                 seasonal_periods.append(i)
 
         Seasonal_Decompose = f"Dominant seasonal periods found:{seasonal_periods}"
-        with open(f'{self.output_path}/seasonal_decompose.txt', 'w') as file:
-            file.write(Seasonal_Decompose)
 
-        return f'{self.output_path}/seasonal_decompose.txt'
+        return Seasonal_Decompose
 
     def information(self):
         buffer = io.StringIO()
@@ -59,11 +57,7 @@ class Shell_EDA:
         pandas_info_info = buffer.getvalue()
         pandas_info_describe = self.dataset.describe()
 
-        with open(f'{self.output_path}/information.txt', 'w') as file:
-            file.write(pandas_info_info+"\n")
-            file.write(str(pandas_info_describe))
-
-        return f'{self.output_path}/information.txt'
+        return pandas_info_info+"\n"+str(pandas_info_describe)
 
     def mean_std_plot(self):
         plt.figure(figsize=(15, 7))
@@ -97,12 +91,7 @@ class Shell_EDA:
         else:
             df_result = "Data is not stationary"
 
-        with open(f'{self.output_path}/DF_test.txt', 'w') as file:
-            file.write("Results of Dickey-Fuller Test:\n")
-            file.write(str(dfoutput)+"\n")
-            file.write(df_result+"\n")
-
-        return f'{self.output_path}/DF_test.txt'
+        return "Results of Dickey-Fuller Test:\n"+str(dfoutput)+"\n"+df_result+"\n"
 
     def seasonal_decomp(self):
         decomp = sm.tsa.seasonal.seasonal_decompose(self.dataset[-68:], model="additive")

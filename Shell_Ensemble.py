@@ -13,4 +13,4 @@ class Shell_Ensemble:
         ensemble_output["Net Cashflow from Operations"] = sub_ensemble.values
 
         ensemble_output.to_csv(f"{self.filepath}/{self.file_name}",index=False)
-        return sub_ensemble
+        return ensemble_output
