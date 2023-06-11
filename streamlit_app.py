@@ -1,9 +1,10 @@
-import os
 import time
-
+import os
+import csv
+from PIL import Image
 import pandas as pd
 import streamlit as st
-
+from deta import Deta
 from Shell_EDA import Shell_EDA
 from Shell_Ensemble import Shell_Ensemble
 from Shell_LightGBM import Shell_LGBM
@@ -11,15 +12,19 @@ from Shell_SARIMAX import Shell_SARIMAX
 
 
 def main():
-    main_c1, main_c2, main_c3 = st.columns([1, 5, 1])
+    deta = Deta(st.secrets["data_key"])
+    deta_img_drive = deta.Drive("Image")
+    data_drive = deta.Drive("Data")
+    data_database = deta.Base("simple_db_testing")
+    shell_logo = deta_img_drive.get("shell_logo.png")
+    shell_logo_img = Image.open(shell_logo)
+    main_c1, main_c2,main_c3 = st.columns([1,5,1])
     with main_c2:
         image_c1, image_c2, image_c3 = st.columns([1, 3, 1])
         title_c1, title_c2, title_c3 = st.columns([1, 5, 1])
         sb_c1, sb_c2, sb_c3 = st.columns([1, 3, 1])
         with image_c2:
-            st.image(
-                "https://github.com/YigitTurali/Shell_App/blob/2448bc79211378ab8717abcf56b78ca8ba03a77f/static/shell_logo.png?raw=true",
-                width=200, use_column_width="auto")
+            st.image(shell_logo_img, width=200,use_column_width ="auto")
         with title_c2:
             st.title("Royal Dutch Shell")
         with sb_c2:
@@ -29,6 +34,8 @@ def main():
         uploaded_file = st.file_uploader("Choose a CSV file")
         if uploaded_file is not None:
             df = pd.read_csv(uploaded_file)
+            csv_data = df.to_csv(index=False).encode('utf-8')
+            data_drive.put("eda_dataset.csv",csv_data)
             df.to_csv('static/eda_dataset.csv')
 
         with st.container():
@@ -150,7 +157,7 @@ def main():
                 training_end_date_lightgbm = pd.to_datetime(st.date_input("Training End Date for LightGBM:"))
 
             st.write("Test Start/End Dates:")
-            col1_date_test, col2_date_test, col3_date_test = st.columns([1, 3, 1])
+            col1_date_test, col2_date_test,col3_date_test = st.columns([1,3,1])
             with col2_date_test:
                 st.write("Test Start/End Dates:")
                 test_start_date = pd.to_datetime(st.date_input("Test Start Date:"))
@@ -449,6 +456,7 @@ def main():
             elif ms == "LightGBM":
                 file_output = lgbm_output
 
+
             @st.cache_data
             def convert_df(df):
                 # IMPORTANT: Cache the conversion to prevent computation on every rerun
@@ -460,11 +468,9 @@ def main():
                 st.balloons()
                 files_to_delete = ["static/eda_dataset.csv", "static/train_dataset.csv",
                                    "static/submission_sarimax.csv", "static/submission_lgbm.csv",
-                                   "static/submission_ensemble.csv", "static/acf_pacf_plot.png",
-                                   "static/mean_std_plot.png",
-                                   "static/pacf_acf_order_0.png", "static/pacf_acf_order_1.png",
-                                   "static/pacf_acf_order_2.png",
-                                   "static/seasonal_decomp.png", "static/train_endog.csv", "static/train_exog.csv"]
+                                   "static/submission_ensemble.csv","static/acf_pacf_plot.png","static/mean_std_plot.png",
+                                   "static/pacf_acf_order_0.png","static/pacf_acf_order_1.png","static/pacf_acf_order_2.png",
+                                   "static/seasonal_decomp.png","static/train_endog.csv","static/train_exog.csv"]
                 for file_path in files_to_delete:
                     if os.path.exists(file_path):
                         os.remove(file_path)
@@ -482,7 +488,6 @@ def main():
                     mime='csv',
                     on_click=download_button_clicked,
                 )
-
 
 if __name__ == "__main__":
     main()
