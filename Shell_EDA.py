@@ -23,6 +23,7 @@ class Shell_EDA:
     def read_data(self):
         file = self.filepath.get(self.train_set_name)
         file_content = file.read()
+        print(file_content)
         file_obj = io.BytesIO(file_content)
         train_set = pd.read_csv(file_obj,index_col="Date")
         self.dataset = pd.DataFrame(train_set[self.column_name], columns=[self.column_name],index=train_set.index)
