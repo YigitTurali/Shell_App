@@ -7,6 +7,7 @@ from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 from statsmodels.tsa.seasonal import seasonal_decompose
 from statsmodels.tsa.stattools import acf
 from statsmodels.tsa.stattools import adfuller
+from deta import Deta, Drive
 import io
 
 class Shell_EDA:
@@ -20,8 +21,11 @@ class Shell_EDA:
         self.dataset = None
 
     def read_data(self):
-        train_set = pd.read_csv(f'{self.filepath}/{self.train_set_name}', index_col="Date")
-        self.dataset = pd.DataFrame(train_set[self.column_name], columns=[self.column_name])
+        file = self.filepath.get(self.train_set_name)
+        file_content = file.read()
+        file_obj = io.BytesIO(file_content)
+        train_set = pd.read_csv(file_obj,index_col="Date")
+        self.dataset = pd.DataFrame(train_set[self.column_name], columns=[self.column_name],index=train_set.index)
         self.dataset.index = pd.to_datetime(self.dataset.index)
         self.dataset = self.dataset.asfreq('D').fillna(0)
 

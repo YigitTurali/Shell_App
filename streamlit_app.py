@@ -36,6 +36,7 @@ def main():
             df = pd.read_csv(uploaded_file)
             csv_data = df.to_csv(index=False).encode('utf-8')
             data_drive.put("eda_dataset.csv",csv_data)
+            data_drive.put("train_dataset.csv", csv_data)
             df.to_csv('static/eda_dataset.csv')
 
         with st.container():
@@ -174,7 +175,7 @@ def main():
 
         if analysis_flag.value == "EDA":
             # Perform EDA and display results
-            shell_data_eda = Shell_EDA(filepath="static",
+            shell_data_eda = Shell_EDA(filepath=data_drive,
                                        train_set_name="eda_dataset.csv",
                                        column_name="Net Cashflow from Operations",
                                        start_date="2021-01-01",
@@ -232,7 +233,7 @@ def main():
                 ms = "Ensemble"
 
             if ms == "Ensemble":
-                shell_sarimax_class = Shell_SARIMAX(filepath="static",
+                shell_sarimax_class = Shell_SARIMAX(filepath=data_drive,
                                                     train_set_name="train_dataset.csv",
                                                     column_name="Net Cashflow from Operations",
                                                     start_date=training_start_date_sarimax,
@@ -266,7 +267,7 @@ def main():
                 st.success('SARIMAX Forecast is Succesfull!', icon="✅")
                 time.sleep(0.5)
 
-                shell_lgbm_class = Shell_LGBM(filepath="static", train_set_name="train_dataset.csv",
+                shell_lgbm_class = Shell_LGBM(filepath=data_drive, train_set_name="train_dataset.csv",
                                               column_name="Net Cashflow from Operations",
                                               start_date=training_start_date_lightgbm,
                                               end_date=None,
@@ -334,9 +335,11 @@ def main():
                 lgbm_output["Date"] = shell_lgbm_class_forecast_output.index
                 lgbm_output["Net Cashflow from Operations"] = shell_lgbm_class_forecast_output.values
 
-                shell_sarimax_class_forecast_output.to_csv(f"{shell_sarimax_class.filepath}/submission_sarimax.csv",
-                                                           index=False)
-                shell_lgbm_class_forecast_output.to_csv(f"{shell_lgbm_class.filepath}/submission_lgbm.csv", index=False)
+                shell_sarimax_class_forecast_output_csv = shell_sarimax_class_forecast_output.to_csv(index=False)
+                data_drive.put("submission_sarimax.csv", shell_sarimax_class_forecast_output_csv)
+
+                shell_lgbm_class_forecast_output_csv = shell_lgbm_class_forecast_output.to_csv(index=False)
+                data_drive.put("submission_lgbm.csv", shell_lgbm_class_forecast_output_csv)
 
                 shell_ensemble_class = Shell_Ensemble(submission_SARIMAX=shell_sarimax_class_forecast_output,
                                                       submission_LGBM=shell_lgbm_class_forecast_output,
@@ -345,7 +348,7 @@ def main():
                 ensemble_output = shell_ensemble_class.Ensemble()
 
             elif ms == "SARIMAX":
-                shell_sarimax_class = Shell_SARIMAX(filepath="static",
+                shell_sarimax_class = Shell_SARIMAX(filepath=data_drive,
                                                     train_set_name="train_dataset.csv",
                                                     column_name="Net Cashflow from Operations",
                                                     start_date=training_start_date_sarimax,
@@ -386,7 +389,7 @@ def main():
 
 
             elif ms == "LightGBM":
-                shell_lgbm_class = Shell_LGBM(filepath="static", train_set_name="train_dataset.csv",
+                shell_lgbm_class = Shell_LGBM(filepath=data_drive, train_set_name="train_dataset.csv",
                                               column_name="Net Cashflow from Operations",
                                               start_date=training_start_date_lightgbm,
                                               end_date=None,
@@ -466,17 +469,12 @@ def main():
                 st.success('Downloaded Succesfully!', icon="✅")
                 time.sleep(0.5)
                 st.balloons()
-                files_to_delete = ["static/eda_dataset.csv", "static/train_dataset.csv",
-                                   "static/submission_sarimax.csv", "static/submission_lgbm.csv",
-                                   "static/submission_ensemble.csv","static/acf_pacf_plot.png","static/mean_std_plot.png",
-                                   "static/pacf_acf_order_0.png","static/pacf_acf_order_1.png","static/pacf_acf_order_2.png",
-                                   "static/seasonal_decomp.png","static/train_endog.csv","static/train_exog.csv"]
-                for file_path in files_to_delete:
-                    if os.path.exists(file_path):
-                        os.remove(file_path)
-                        print(f"Deleted file: {file_path}")
-                    else:
-                        print(f"File not found: {file_path}")
+                files_to_delete = ["eda_dataset.csv", "train_dataset.csv",
+                                   "submission_sarimax.csv", "submission_lgbm.csv",
+                                   "submission_ensemble.csv"]
+                result = data_drive.delete_many(files_to_delete);
+                print("deleted:", result.get("deleted"))
+                print("failed:", result.get("failed"))
                 forecast_csv = pd.DataFrame(columns=["Date", "Net Cashflow from Operations"])
 
             forecast_csv = convert_df(file_output)

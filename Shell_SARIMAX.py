@@ -1,6 +1,6 @@
 import itertools
 import warnings
-
+import io
 import holidays
 import matplotlib.pyplot as plt
 import numpy as np
@@ -43,8 +43,12 @@ class Shell_SARIMAX:
         return df
 
     def create_train_set(self):
-        self.train_set = pd.read_csv(f'{self.filepath}/{self.train_set_name}', index_col="Date")
-        self.train_endog = pd.DataFrame(self.train_set[f"{self.column_name}"], columns=["Net Cashflow from Operations"])
+        file = self.filepath.get(self.train_set_name)
+        file_content = file.read()
+        file_obj = io.BytesIO(file_content)
+        train_set = pd.read_csv(file_obj, index_col="Date")
+        self.train_set = pd.DataFrame(train_set[self.column_name], columns=[self.column_name])
+        self.train_endog = pd.DataFrame(self.train_set[f"{self.column_name}"], columns=["Net Cashflow from Operations"],index=self.train_set.index)
         self.train_endog.index = pd.to_datetime(self.train_endog.index)
         self.train_endog = self.train_endog.asfreq('D').fillna(0)
 
@@ -92,8 +96,8 @@ class Shell_SARIMAX:
         self.train_exog = self.train_exog[self.train_exog.index < self.prediction_start_date]
 
         self.train_endog = self.train_endog.dropna()
-        self.train_exog.to_csv(f'{self.filepath}/train_exog.csv')
-        self.train_endog.to_csv(f'{self.filepath}/train_endog.csv')
+        # self.train_exog.to_csv(f'{self.filepath}/train_exog.csv')
+        # self.train_endog.to_csv(f'{self.filepath}/train_endog.csv')
 
     def SARIMAX_gridsearch(self):
         p_values = range(0, 3)  # Replace with the desired range of p values

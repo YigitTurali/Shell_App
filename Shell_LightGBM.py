@@ -2,6 +2,7 @@ import holidays
 import lightgbm as lgb
 import numpy as np
 import pandas as pd
+import io
 from sklearn.model_selection import RandomizedSearchCV
 from termcolor import colored
 class Shell_LGBM:
@@ -28,9 +29,12 @@ class Shell_LGBM:
         return df
 
     def create_train_set(self):
-        self.train_set = pd.read_csv(f'{self.filepath}/{self.train_set_name}', index_col="Date")
+        file = self.filepath.get(self.train_set_name)
+        file_content = file.read()
+        file_obj = io.BytesIO(file_content)
+        self.train_set = pd.read_csv(file_obj, index_col="Date")
         self.train_endog = pd.DataFrame(self.train_set[f"{self.column_name}"],
-                                        columns=["Net Cashflow from Operations"])
+                                        columns=["Net Cashflow from Operations"],index=self.train_set.index)
         self.train_endog.index = pd.to_datetime(self.train_endog.index)
         self.train_endog = self.train_endog.asfreq('D').fillna(0)
 
@@ -57,8 +61,8 @@ class Shell_LGBM:
         self.train_exog = self.train_exog[self.train_exog.index < self.prediction_start_date]
 
         self.train_endog = self.train_endog.dropna()
-        self.train_exog.to_csv(f'{self.filepath}/train_exog.csv')
-        self.train_endog.to_csv(f'{self.filepath}/train_endog.csv')
+        # self.train_exog.to_csv(f'{self.filepath}/train_exog.csv')
+        # self.train_endog.to_csv(f'{self.filepath}/train_endog.csv')
 
     def LGBM_GridSearch(self):
         boosting_type = self.param_set["boosting_type"]

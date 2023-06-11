@@ -11,6 +11,6 @@ class Shell_Ensemble:
         ensemble_output = pd.DataFrame(columns=["Date", "Net Cashflow from Operations"])
         ensemble_output["Date"] = sub_ensemble.index
         ensemble_output["Net Cashflow from Operations"] = sub_ensemble.values
-
-        ensemble_output.to_csv(f"{self.filepath}/{self.file_name}",index=False)
+        ensemble_output_csv = ensemble_output.to_csv(index=False)
+        self.filepath.put("submission_ensemble.csv", ensemble_output_csv)
         return ensemble_output
