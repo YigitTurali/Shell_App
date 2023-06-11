@@ -94,7 +94,7 @@ class Shell_LGBM:
 
         model = lgb.LGBMRegressor()
         random_search = RandomizedSearchCV(estimator=model, param_distributions=params, n_iter=250, cv=5,
-                                           random_state=42, verbose=4, scoring="neg_mean_absolute_error",n_jobs=1)
+                                           random_state=42, verbose=4, scoring="neg_mean_absolute_error",n_jobs=-1)
         dataset = lgb.Dataset(self.train_exog[self.train_exog.index >= self.start_date],
                               label=self.train_endog[self.train_endog.index >= self.start_date])
         random_search.fit(dataset.data, dataset.label)
