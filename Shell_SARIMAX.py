@@ -10,7 +10,7 @@ from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 from statsmodels.tsa.seasonal import seasonal_decompose
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 from statsmodels.tsa.stattools import acf
-from stqdm import stqdm
+from tqdm import tqdm
 from termcolor import colored
 
 warnings.simplefilter('ignore', category=UserWarning)
@@ -118,12 +118,12 @@ class Shell_SARIMAX:
         self.best_params = None
 
         num_chunks = (len(parameters) + chunk_size - 1) // chunk_size
-        for chunk_idx in stqdm(range(num_chunks)):
+        for chunk_idx in tqdm(range(num_chunks)):
             start_idx = chunk_idx * chunk_size
             end_idx = min((chunk_idx + 1) * chunk_size, len(parameters))
             chunk = parameters[start_idx:end_idx]
             st.cache_data.clear()
-            for param in stqdm(chunk):
+            for param in tqdm(chunk):
                 try:
                     # Fit the SARIMAX model with the current combination of parameters
                     model = SARIMAX(
