@@ -1,7 +1,7 @@
 import io
 import itertools
 import warnings
-
+import streamlit as st
 import holidays
 import matplotlib.pyplot as plt
 import numpy as np
@@ -122,7 +122,7 @@ class Shell_SARIMAX:
             start_idx = chunk_idx * chunk_size
             end_idx = min((chunk_idx + 1) * chunk_size, len(parameters))
             chunk = parameters[start_idx:end_idx]
-
+            st.cache_data.clear()
             for param in stqdm(chunk):
                 try:
                     # Fit the SARIMAX model with the current combination of parameters
