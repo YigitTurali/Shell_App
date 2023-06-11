@@ -5,6 +5,9 @@ import pandas as pd
 import io
 from sklearn.model_selection import RandomizedSearchCV
 from termcolor import colored
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning)
+
 class Shell_LGBM:
 
     def __init__(self, filepath, train_set_name, column_name, start_date, end_date, prediction_start_date,
