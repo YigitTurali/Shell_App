@@ -63,7 +63,7 @@ class Shell_LGBM:
         self.train_endog = self.train_endog.dropna()
         # self.train_exog.to_csv(f'{self.filepath}/train_exog.csv')
         # self.train_endog.to_csv(f'{self.filepath}/train_endog.csv')
-
+    
     def LGBM_GridSearch(self):
         boosting_type = self.param_set["boosting_type"]
         num_leaves = self.param_set["num_leaves"]
@@ -91,7 +91,7 @@ class Shell_LGBM:
 
         model = lgb.LGBMRegressor()
         random_search = RandomizedSearchCV(estimator=model, param_distributions=params, n_iter=250, cv=5,
-                                           random_state=42, verbose=-1, scoring="neg_mean_absolute_error")
+                                           random_state=42, verbose=4, scoring="neg_mean_absolute_error")
         dataset = lgb.Dataset(self.train_exog[self.train_exog.index >= self.start_date],
                               label=self.train_endog[self.train_endog.index >= self.start_date])
         random_search.fit(dataset.data, dataset.label)
@@ -101,7 +101,7 @@ class Shell_LGBM:
 
         print(colored(f"Best parameter set for LightGBM: {self.best_params}","green"))
         print(colored("Succesfully trained with LightGBM","green"))
-
+    
     def Train_LightGBM(self):
         dataset = lgb.Dataset(self.train_exog[self.train_exog.index >= self.start_date],
                               label=self.train_endog[self.train_endog.index >= self.start_date])

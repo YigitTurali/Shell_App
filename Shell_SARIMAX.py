@@ -42,6 +42,7 @@ class Shell_SARIMAX:
 
         return df
 
+    
     def create_train_set(self):
         file = self.filepath.get(self.train_set_name)
         file_content = file.read()
@@ -59,6 +60,7 @@ class Shell_SARIMAX:
         plot_pacf(self.train_endog["Net Cashflow from Operations"], ax=ax2, lags=50)
         plt.show()
 
+    
     def seasonal_decomposition(self):
         # Seasonal Decomposition
         res = seasonal_decompose(self.train_endog[self.train_endog.index >= self.start_date], model='additive')
@@ -73,6 +75,7 @@ class Shell_SARIMAX:
         # Print the dominant seasonal periods
         # print("Dominant seasonal periods found:", self.seasonal_periods)
 
+    
     def create_train_test_exog_endog(self):
         # feature engineering
         self.train_exog = self.train_endog.copy()
@@ -100,6 +103,7 @@ class Shell_SARIMAX:
         # self.train_endog.to_csv(f'{self.filepath}/train_endog.csv')
 
     def SARIMAX_gridsearch(self):
+
         p_values = range(0, 3)  # Replace with the desired range of p values
         q_values = range(0, 3)  # Replace with the desired range of q values
         d_values = range(0, 3)  # Replace with the desired range of d values
@@ -137,7 +141,7 @@ class Shell_SARIMAX:
         print("AIC:", best_aic)
 
         return self.best_params
-
+    
     def SARIMAX_train_test(self):
         self.model = SARIMAX(self.train_endog[self.train_endog.index >= self.start_date],
                              exog=self.train_exog[self.train_exog.index >= self.start_date],
