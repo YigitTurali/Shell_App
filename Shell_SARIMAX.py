@@ -1,7 +1,7 @@
 import io
 import itertools
 import warnings
-import streamlit as st
+
 import holidays
 import matplotlib.pyplot as plt
 import numpy as np
@@ -10,7 +10,7 @@ from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 from statsmodels.tsa.seasonal import seasonal_decompose
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 from statsmodels.tsa.stattools import acf
-from tqdm import tqdm
+from stqdm import stqdm
 from termcolor import colored
 
 warnings.simplefilter('ignore', category=UserWarning)
@@ -103,6 +103,7 @@ class Shell_SARIMAX:
         # self.train_endog.to_csv(f'{self.filepath}/train_endog.csv')
 
     def SARIMAX_gridsearch(self):
+
         p_values = range(0, 3)  # Replace with the desired range of p values
         q_values = range(0, 3)  # Replace with the desired range of q values
         d_values = range(0, 3)  # Replace with the desired range of d values
@@ -112,38 +113,32 @@ class Shell_SARIMAX:
 
         parameters = list(
             itertools.product(p_values, d_values, q_values, P_values, D_values, Q_values, self.seasonal_periods[:5]))
-        chunk_size = 300  # Number of parameter combinations to process in each chunk
-
         best_aic = float("inf")
         self.best_params = None
 
-        num_chunks = (len(parameters) + chunk_size - 1) // chunk_size
-        for chunk_idx in tqdm(range(num_chunks)):
-            start_idx = chunk_idx * chunk_size
-            end_idx = min((chunk_idx + 1) * chunk_size, len(parameters))
-            chunk = parameters[start_idx:end_idx]
-            st.cache_data.clear()
-            for param in tqdm(chunk):
-                try:
-                    # Fit the SARIMAX model with the current combination of parameters
-                    model = SARIMAX(
-                        self.train_endog[self.train_endog.index >= self.start_date],
-                        exog=self.train_exog[self.train_exog.index >= self.start_date],
-                        order=(param[0], param[1], param[2]),
-                        seasonal_order=(param[3], param[4], param[5], param[6])
-                    )
-                    results = model.fit(disp=False)
+        for param in stqdm(parameters):
+            try:
+                # Fit the SARIMAX model with the current combination of parameters
+                model = SARIMAX(self.train_endog[self.train_endog.index >= self.start_date],
+                                exog=self.train_exog[self.train_exog.index >= self.start_date],
+                                order=(param[0], param[1], param[2]),
+                                seasonal_order=(param[3], param[4], param[5], param[6]))
+                results = model.fit(disp=False)
 
-                    # Calculate the AIC score for the model
-                    aic = results.aic
+                # Calculate the AIC score for the model
+                aic = results.aic
 
-                    # Update the best AIC and parameters if the current model has a lower AIC
-                    if aic < best_aic:
-                        best_aic = aic
-                        self.best_params = param
+                # Update the best AIC and parameters if the current model has a lower AIC
+                if aic < best_aic:
+                    best_aic = aic
+                    self.best_params = param
 
-                except Exception as e:
-                    continue
+            except Exception as e:
+                continue
+
+        # Print the best parameters and AIC value
+        print("Best Parameters:", self.best_params)
+        print("AIC:", best_aic)
 
         return self.best_params
 

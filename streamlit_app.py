@@ -54,16 +54,16 @@ def main():
                     lgbm_grid_search = False
                     with col1_param:
                         st.write("LightGBM Parameters:")
-                        num_leaves = st.text_input("num_leaves:")
-                        max_depth = st.text_input("max_depth:")
-                        learning_rate = st.text_input("learning_rate:")
-                        subsample = st.text_input("subsample:")
-                        colsample_bytree = st.text_input("colsample_bytree:")
-                        reg_alpha = st.text_input("reg_alpha:")
-                        reg_lambda = st.text_input("reg_lambda:")
-                        n_estimators = st.text_input("n_estimators:")
-                        random_state = st.text_input("random_state:")
-                        num_iterations = st.text_input("num_iterations:")
+                        num_leaves = st.text_input("num_leaves:", placeholder="Default Best Parameter: 31")
+                        max_depth = st.text_input("max_depth:", placeholder="Default Best Parameter: 5")
+                        learning_rate = st.text_input("learning_rate:", placeholder="Default Best Parameter: 0.01")
+                        subsample = st.text_input("subsample:", placeholder="Default Best Parameter: 31")
+                        colsample_bytree = st.text_input("colsample_bytree:", placeholder="Default Best Parameter: 0.6")
+                        reg_alpha = st.text_input("reg_alpha:", placeholder="Default Best Parameter: 0.5")
+                        reg_lambda = st.text_input("reg_lambda:", placeholder="Default Best Parameter: 0.1")
+                        n_estimators = st.text_input("n_estimators:", placeholder="Default Best Parameter: 200")
+                        random_state = st.text_input("random_state:", placeholder="Default Best Parameter: 42")
+                        num_iterations = st.text_input("num_iterations:", placeholder="Default Best Parameter: 200")
                         try:
                             lightgbm_parameters = {"num_leaves": int(num_leaves),
                                                    "max_depth": int(max_depth),
@@ -86,14 +86,14 @@ def main():
                     with col2_param:
                         st.write("SARIMAX Parameters:")
                         st.write("Order")
-                        p = st.text_input("p:")
-                        q = st.text_input("q:")
-                        d = st.text_input("d:")
+                        p = st.text_input("p:", placeholder="Default Best Parameter: 1")
+                        q = st.text_input("q:", placeholder="Default Best Parameter: 0")
+                        d = st.text_input("d:", placeholder="Default Best Parameter: 1")
                         st.write("Seasonal Order")
-                        P = st.text_input("P:")
-                        D = st.text_input("D:")
-                        Q = st.text_input("Q:")
-                        s = st.text_input("s:")
+                        P = st.text_input("P:", placeholder="Default Best Parameter: 2")
+                        D = st.text_input("D:", placeholder="Default Best Parameter: 2")
+                        Q = st.text_input("Q:", placeholder="Default Best Parameter: 2")
+                        s = st.text_input("s:", placeholder="Default Best Parameter: 4")
                         try:
                             sarimax_params = [int(p), int(q), int(d), int(P), int(D), int(Q), int(s)]
 
@@ -106,16 +106,16 @@ def main():
                 else:
                     lgbm_grid_search = False
                     st.write("LightGBM Parameters:")
-                    num_leaves = st.text_input("num_leaves:")
-                    max_depth = st.text_input("max_depth:")
-                    learning_rate = st.text_input("learning_rate:")
-                    subsample = st.text_input("subsample:")
-                    colsample_bytree = st.text_input("colsample_bytree:")
-                    reg_alpha = st.text_input("reg_alpha:")
-                    reg_lambda = st.text_input("reg_lambda:")
-                    n_estimators = st.text_input("n_estimators:")
-                    random_state = st.text_input("random_state:")
-                    num_iterations = st.text_input("num_iterations:")
+                    num_leaves = st.text_input("num_leaves:", placeholder="Default Best Parameter: 31")
+                    max_depth = st.text_input("max_depth:", placeholder="Default Best Parameter: 5")
+                    learning_rate = st.text_input("learning_rate:", placeholder="Default Best Parameter: 0.01")
+                    subsample = st.text_input("subsample:", placeholder="Default Best Parameter: 31")
+                    colsample_bytree = st.text_input("colsample_bytree:", placeholder="Default Best Parameter: 0.6")
+                    reg_alpha = st.text_input("reg_alpha:", placeholder="Default Best Parameter: 0.5")
+                    reg_lambda = st.text_input("reg_lambda:", placeholder="Default Best Parameter: 0.1")
+                    n_estimators = st.text_input("n_estimators:", placeholder="Default Best Parameter: 200")
+                    random_state = st.text_input("random_state:", placeholder="Default Best Parameter: 42")
+                    num_iterations = st.text_input("num_iterations:", placeholder="Default Best Parameter: 200")
                     try:
                         lightgbm_parameters = {"num_leaves": int(num_leaves),
                                                "max_depth": int(max_depth),
@@ -136,14 +136,14 @@ def main():
                     sarimax_grid_search = False
                     st.write("SARIMAX Parameters:")
                     st.write("Order")
-                    p = st.text_input("p:")
-                    d = st.text_input("d:")
-                    q = st.text_input("q:")
+                    p = st.text_input("p:", placeholder="Default Best Parameter: 1")
+                    q = st.text_input("q:", placeholder="Default Best Parameter: 0")
+                    d = st.text_input("d:", placeholder="Default Best Parameter: 1")
                     st.write("Seasonal Order")
-                    P = st.text_input("P:")
-                    D = st.text_input("D:")
-                    Q = st.text_input("Q:")
-                    s = st.text_input("s:")
+                    P = st.text_input("P:", placeholder="Default Best Parameter: 2")
+                    D = st.text_input("D:", placeholder="Default Best Parameter: 2")
+                    Q = st.text_input("Q:", placeholder="Default Best Parameter: 2")
+                    s = st.text_input("s:", placeholder="Default Best Parameter: 4")
                     try:
                         sarimax_params = [int(p), int(q), int(d), int(P), int(D), int(Q), int(s)]
                     except:
@@ -152,9 +152,19 @@ def main():
             col1_date, col2_date = st.columns(2)
             with col1_date:
                 training_start_date_sarimax = pd.to_datetime(st.date_input("Training Start Date for SARIMAX:"))
-                training_end_date_sarimax = pd.to_datetime(st.date_input("Training End Date for SARIMAX:"))
+                if st.checkbox("Disable Training End Date For SARIMAX?"):
+                    disabled_sarimax = True
+                else:
+                    False
+                training_end_date_sarimax = pd.to_datetime(st.date_input("Training End Date for SARIMAX:"),
+                                                           disabled=disabled_sarimax)
             with col2_date:
-                training_start_date_lightgbm = pd.to_datetime(st.date_input("Training Start Date for LightGBM:"))
+                if st.checkbox("Disable Training End Date For LightGBM?"):
+                    disabled_lgbm = True
+                else:
+                    False
+                training_start_date_lightgbm = pd.to_datetime(st.date_input("Training Start Date for LightGBM:"),
+                                                              disabled=disabled_sarimax)
                 training_end_date_lightgbm = pd.to_datetime(st.date_input("Training End Date for LightGBM:"))
 
             st.write("Test Start/End Dates:")
@@ -237,7 +247,8 @@ def main():
                                                     train_set_name="train_dataset.csv",
                                                     column_name="Net Cashflow from Operations",
                                                     start_date=training_start_date_sarimax,
-                                                    end_date=None, prediction_start_date=test_start_date,
+                                                    end_date=training_end_date_sarimax,
+                                                    prediction_start_date=test_start_date,
                                                     prediction_end_date=test_end_date)
 
                 shell_sarimax_class.create_train_set()
@@ -270,7 +281,7 @@ def main():
                 shell_lgbm_class = Shell_LGBM(filepath=data_drive, train_set_name="train_dataset.csv",
                                               column_name="Net Cashflow from Operations",
                                               start_date=training_start_date_lightgbm,
-                                              end_date=None,
+                                              end_date=training_end_date_lightgbm,
                                               prediction_start_date=test_start_date,
                                               prediction_end_date=test_end_date,
                                               param_set={'objective': ['regression'],
@@ -352,7 +363,8 @@ def main():
                                                     train_set_name="train_dataset.csv",
                                                     column_name="Net Cashflow from Operations",
                                                     start_date=training_start_date_sarimax,
-                                                    end_date=None, prediction_start_date=test_start_date,
+                                                    end_date=training_end_date_sarimax,
+                                                    prediction_start_date=test_start_date,
                                                     prediction_end_date=test_end_date)
 
                 shell_sarimax_class.create_train_set()
@@ -392,7 +404,7 @@ def main():
                 shell_lgbm_class = Shell_LGBM(filepath=data_drive, train_set_name="train_dataset.csv",
                                               column_name="Net Cashflow from Operations",
                                               start_date=training_start_date_lightgbm,
-                                              end_date=None,
+                                              end_date=training_end_date_lightgbm,
                                               prediction_start_date=test_start_date,
                                               prediction_end_date=test_end_date,
                                               param_set={'objective': ['regression'],
