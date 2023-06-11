@@ -123,7 +123,7 @@ class Shell_SARIMAX:
                                 exog=self.train_exog[self.train_exog.index >= self.start_date],
                                 order=(param[0], param[1], param[2]),
                                 seasonal_order=(param[3], param[4], param[5], param[6]))
-                results = model.fit()
+                results = model.fit(disp=False)
 
                 # Calculate the AIC score for the model
                 aic = results.aic
