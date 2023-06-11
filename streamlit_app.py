@@ -15,7 +15,6 @@ def main():
     deta = Deta(st.secrets["data_key"])
     deta_img_drive = deta.Drive("Image")
     data_drive = deta.Drive("Data")
-    data_database = deta.Base("simple_db_testing")
     shell_logo = deta_img_drive.get("shell_logo.png")
     shell_logo_img = Image.open(shell_logo)
     main_c1, main_c2, main_c3 = st.columns([1, 5, 1])
@@ -236,6 +235,8 @@ def main():
                 st.image(order_2_path)
                 st.header("ACF/PACF Plot with Order 2")
                 st.image(order_3_path)
+
+            st.cache_data.clear()
 
         elif analysis_flag.value == "Forecast":
 
