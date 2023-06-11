@@ -10,6 +10,7 @@ from statsmodels.tsa.seasonal import seasonal_decompose
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 from statsmodels.tsa.stattools import acf
 from tqdm import tqdm
+from stqdm  import stqdm
 from termcolor import colored
 warnings.simplefilter('ignore', category=UserWarning)
 
@@ -116,7 +117,7 @@ class Shell_SARIMAX:
         best_aic = float("inf")
         self.best_params = None
 
-        for param in tqdm(parameters):
+        for param in stqdm(parameters):
             try:
                 # Fit the SARIMAX model with the current combination of parameters
                 model = SARIMAX(self.train_endog[self.train_endog.index >= self.start_date],
