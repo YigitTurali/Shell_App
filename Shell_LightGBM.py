@@ -1,12 +1,15 @@
+import io
+import warnings
+
 import holidays
 import lightgbm as lgb
 import numpy as np
 import pandas as pd
-import io
 from sklearn.model_selection import RandomizedSearchCV
 from termcolor import colored
-import warnings
+
 warnings.filterwarnings("ignore", category=UserWarning)
+
 
 class Shell_LGBM:
 
@@ -37,7 +40,7 @@ class Shell_LGBM:
         file_obj = io.BytesIO(file_content)
         self.train_set = pd.read_csv(file_obj, index_col="Date")
         self.train_endog = pd.DataFrame(self.train_set[f"{self.column_name}"],
-                                        columns=["Net Cashflow from Operations"],index=self.train_set.index)
+                                        columns=["Net Cashflow from Operations"], index=self.train_set.index)
         self.train_endog.index = pd.to_datetime(self.train_endog.index)
         self.train_endog = self.train_endog.asfreq('D').fillna(0)
 
@@ -66,7 +69,7 @@ class Shell_LGBM:
         self.train_endog = self.train_endog.dropna()
         # self.train_exog.to_csv(f'{self.filepath}/train_exog.csv')
         # self.train_endog.to_csv(f'{self.filepath}/train_endog.csv')
-    
+
     def LGBM_GridSearch(self):
         boosting_type = self.param_set["boosting_type"]
         num_leaves = self.param_set["num_leaves"]
@@ -94,7 +97,7 @@ class Shell_LGBM:
 
         model = lgb.LGBMRegressor()
         random_search = RandomizedSearchCV(estimator=model, param_distributions=params, n_iter=250, cv=5,
-                                           random_state=42, verbose=4, scoring="neg_mean_absolute_error",n_jobs=-1)
+                                           random_state=42, verbose=4, scoring="neg_mean_absolute_error", n_jobs=-1)
         dataset = lgb.Dataset(self.train_exog[self.train_exog.index >= self.start_date],
                               label=self.train_endog[self.train_endog.index >= self.start_date])
         random_search.fit(dataset.data, dataset.label)
@@ -102,19 +105,20 @@ class Shell_LGBM:
         self.best_params = random_search.best_params_
         self.best_model = random_search.best_estimator_
 
-        print(colored(f"Best parameter set for LightGBM: {self.best_params}","green"))
-        print(colored("Succesfully trained with LightGBM","green"))
-    
+        print(colored(f"Best parameter set for LightGBM: {self.best_params}", "green"))
+        print(colored("Succesfully trained with LightGBM", "green"))
+
     def Train_LightGBM(self):
         dataset = lgb.Dataset(self.train_exog[self.train_exog.index >= self.start_date],
                               label=self.train_endog[self.train_endog.index >= self.start_date])
-        model = lgb.LGBMRegressor(**self.best_params,verbose=1)
-        model.fit(dataset.data, dataset.label,verbose=1)
+        model = lgb.LGBMRegressor(**self.best_params, verbose=1)
+        model.fit(dataset.data, dataset.label, verbose=1)
         self.best_model = model
-        print(colored("Succesfully trained with LightGBM","green"))
+        print(colored("Succesfully trained with LightGBM", "green"))
+
     def Forecast_LightGBM(self):
         forecast_values = pd.Series(
             self.best_model.predict(self.test_exog, steps=len(self.test_exog)), index=self.test_exog.index)
         forecast_values = forecast_values[~forecast_values.index.weekday.isin([5, 6])]
-        print(colored("Succesfully forecasted with LightGBM","green"))
+        print(colored("Succesfully forecasted with LightGBM", "green"))
         return forecast_values

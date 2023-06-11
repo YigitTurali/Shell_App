@@ -1,4 +1,5 @@
-import holidays
+import io
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -7,11 +8,10 @@ from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 from statsmodels.tsa.seasonal import seasonal_decompose
 from statsmodels.tsa.stattools import acf
 from statsmodels.tsa.stattools import adfuller
-from deta import Deta, Drive
-import io
+
 
 class Shell_EDA:
-    def __init__(self,filepath, train_set_name, column_name, start_date, end_date,output_path):
+    def __init__(self, filepath, train_set_name, column_name, start_date, end_date, output_path):
         self.filepath = filepath
         self.output_path = output_path
         self.train_set_name = train_set_name
@@ -24,8 +24,8 @@ class Shell_EDA:
         file = self.filepath.get(self.train_set_name)
         file_content = file.read()
         file_obj = io.BytesIO(file_content)
-        train_set = pd.read_csv(file_obj,index_col="Date")
-        self.dataset = pd.DataFrame(train_set[self.column_name], columns=[self.column_name],index=train_set.index)
+        train_set = pd.read_csv(file_obj, index_col="Date")
+        self.dataset = pd.DataFrame(train_set[self.column_name], columns=[self.column_name], index=train_set.index)
         self.dataset.index = pd.to_datetime(self.dataset.index)
         self.dataset = self.dataset.asfreq('D').fillna(0)
 
@@ -61,7 +61,7 @@ class Shell_EDA:
         pandas_info_info = buffer.getvalue()
         pandas_info_describe = self.dataset.describe()
 
-        return pandas_info_info+"\n"+str(pandas_info_describe)
+        return pandas_info_info + "\n" + str(pandas_info_describe)
 
     def mean_std_plot(self):
         plt.figure(figsize=(15, 7))
@@ -78,7 +78,7 @@ class Shell_EDA:
         return f'{self.output_path}/mean_std_plot.png'
 
     def DF_test(self):
-        dftest = adfuller(self.dataset,autolag="AIC")
+        dftest = adfuller(self.dataset, autolag="AIC")
         dfoutput = pd.Series(
             dftest[0:4],
             index=[
@@ -95,7 +95,7 @@ class Shell_EDA:
         else:
             df_result = "Data is not stationary"
 
-        return "Results of Dickey-Fuller Test:\n"+str(dfoutput)+"\n"+df_result+"\n"
+        return "Results of Dickey-Fuller Test:\n" + str(dfoutput) + "\n" + df_result + "\n"
 
     def seasonal_decomp(self):
         decomp = sm.tsa.seasonal.seasonal_decompose(self.dataset[-68:], model="additive")
@@ -107,7 +107,6 @@ class Shell_EDA:
         plt.savefig(f'{self.output_path}/seasonal_decomp.png')
 
         return f'{self.output_path}/seasonal_decomp.png'
-
 
     def ordered_pacf_acf(self):
         ###AutoCorrelation and Partial AutoCorrelation
@@ -127,4 +126,3 @@ class Shell_EDA:
         plt.savefig(f'{self.output_path}/pacf_acf_order_2.png')
 
         return f'{self.output_path}/pacf_acf_order_0.png', f'{self.output_path}/pacf_acf_order_1.png', f'{self.output_path}/pacf_acf_order_2.png'
-

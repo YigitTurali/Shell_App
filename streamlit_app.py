@@ -1,10 +1,10 @@
 import time
-import os
-import csv
-from PIL import Image
+
 import pandas as pd
 import streamlit as st
+from PIL import Image
 from deta import Deta
+
 from Shell_EDA import Shell_EDA
 from Shell_Ensemble import Shell_Ensemble
 from Shell_LightGBM import Shell_LGBM
@@ -18,13 +18,13 @@ def main():
     data_database = deta.Base("simple_db_testing")
     shell_logo = deta_img_drive.get("shell_logo.png")
     shell_logo_img = Image.open(shell_logo)
-    main_c1, main_c2,main_c3 = st.columns([1,5,1])
+    main_c1, main_c2, main_c3 = st.columns([1, 5, 1])
     with main_c2:
         image_c1, image_c2, image_c3 = st.columns([1, 3, 1])
         title_c1, title_c2, title_c3 = st.columns([1, 5, 1])
         sb_c1, sb_c2, sb_c3 = st.columns([1, 3, 1])
         with image_c2:
-            st.image(shell_logo_img, width=200,use_column_width ="auto")
+            st.image(shell_logo_img, width=200, use_column_width="auto")
         with title_c2:
             st.title("Royal Dutch Shell")
         with sb_c2:
@@ -35,7 +35,7 @@ def main():
         if uploaded_file is not None:
             df = pd.read_csv(uploaded_file)
             csv_data = df.to_csv(index=False).encode('utf-8')
-            data_drive.put("eda_dataset.csv",csv_data)
+            data_drive.put("eda_dataset.csv", csv_data)
             data_drive.put("train_dataset.csv", csv_data)
             df.to_csv('static/eda_dataset.csv')
 
@@ -158,7 +158,7 @@ def main():
                 training_end_date_lightgbm = pd.to_datetime(st.date_input("Training End Date for LightGBM:"))
 
             st.write("Test Start/End Dates:")
-            col1_date_test, col2_date_test,col3_date_test = st.columns([1,3,1])
+            col1_date_test, col2_date_test, col3_date_test = st.columns([1, 3, 1])
             with col2_date_test:
                 st.write("Test Start/End Dates:")
                 test_start_date = pd.to_datetime(st.date_input("Test Start Date:"))
@@ -459,7 +459,6 @@ def main():
             elif ms == "LightGBM":
                 file_output = lgbm_output
 
-
             @st.cache_data
             def convert_df(df):
                 # IMPORTANT: Cache the conversion to prevent computation on every rerun
@@ -475,7 +474,7 @@ def main():
                 result = data_drive.delete_many(files_to_delete);
                 print("deleted:", result.get("deleted"))
                 print("failed:", result.get("failed"))
-                forecast_csv = pd.DataFrame(columns=["Date", "Net Cashflow from Operations"])
+                st.cache_data.clear()
 
             forecast_csv = convert_df(file_output)
             with b2_test:
@@ -486,6 +485,7 @@ def main():
                     mime='csv',
                     on_click=download_button_clicked,
                 )
+
 
 if __name__ == "__main__":
     main()

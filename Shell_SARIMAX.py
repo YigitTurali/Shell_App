@@ -1,6 +1,7 @@
+import io
 import itertools
 import warnings
-import io
+
 import holidays
 import matplotlib.pyplot as plt
 import numpy as np
@@ -9,9 +10,9 @@ from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 from statsmodels.tsa.seasonal import seasonal_decompose
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 from statsmodels.tsa.stattools import acf
-from tqdm import tqdm
-from stqdm  import stqdm
+from stqdm import stqdm
 from termcolor import colored
+
 warnings.simplefilter('ignore', category=UserWarning)
 
 
@@ -43,14 +44,14 @@ class Shell_SARIMAX:
 
         return df
 
-    
     def create_train_set(self):
         file = self.filepath.get(self.train_set_name)
         file_content = file.read()
         file_obj = io.BytesIO(file_content)
         train_set = pd.read_csv(file_obj, index_col="Date")
         self.train_set = pd.DataFrame(train_set[self.column_name], columns=[self.column_name])
-        self.train_endog = pd.DataFrame(self.train_set[f"{self.column_name}"], columns=["Net Cashflow from Operations"],index=self.train_set.index)
+        self.train_endog = pd.DataFrame(self.train_set[f"{self.column_name}"], columns=["Net Cashflow from Operations"],
+                                        index=self.train_set.index)
         self.train_endog.index = pd.to_datetime(self.train_endog.index)
         self.train_endog = self.train_endog.asfreq('D').fillna(0)
 
@@ -61,7 +62,6 @@ class Shell_SARIMAX:
         plot_pacf(self.train_endog["Net Cashflow from Operations"], ax=ax2, lags=50)
         plt.show()
 
-    
     def seasonal_decomposition(self):
         # Seasonal Decomposition
         res = seasonal_decompose(self.train_endog[self.train_endog.index >= self.start_date], model='additive')
@@ -76,7 +76,6 @@ class Shell_SARIMAX:
         # Print the dominant seasonal periods
         # print("Dominant seasonal periods found:", self.seasonal_periods)
 
-    
     def create_train_test_exog_endog(self):
         # feature engineering
         self.train_exog = self.train_endog.copy()
@@ -142,20 +141,20 @@ class Shell_SARIMAX:
         print("AIC:", best_aic)
 
         return self.best_params
-    
+
     def SARIMAX_train_test(self):
         self.model = SARIMAX(self.train_endog[self.train_endog.index >= self.start_date],
                              exog=self.train_exog[self.train_exog.index >= self.start_date],
-                             order=self.best_params[:3], seasonal_order=self.best_params[3:],verbose=1)
+                             order=self.best_params[:3], seasonal_order=self.best_params[3:], verbose=1)
         self.best_SARIMAX = self.model.fit()
-        print(colored("SARIMAX is succesfully trained","green"))
+        print(colored("SARIMAX is succesfully trained", "green"))
 
     def Sarimax_Forecast(self):
         # Forecast using the trained model
         forecast = self.best_SARIMAX.get_forecast(steps=len(self.test_exog), exog=self.test_exog)
         forecast_values = forecast.predicted_mean
         forecast_values = forecast_values[~forecast_values.index.weekday.isin([5, 6])]
-        print(colored("Succesfully forecasted using SARIMAX","green"))
+        print(colored("Succesfully forecasted using SARIMAX", "green"))
         return forecast_values
 
 # depo_pump_imm = pd.read_csv(f'{filepath}/depo_pump_imm.csv')
