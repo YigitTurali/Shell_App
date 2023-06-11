@@ -155,17 +155,19 @@ def main():
                 if st.checkbox("Disable Training End Date For SARIMAX?"):
                     disabled_sarimax = True
                 else:
-                    False
-                training_end_date_sarimax = pd.to_datetime(st.date_input("Training End Date for SARIMAX:"),
-                                                           disabled=disabled_sarimax)
+                    disabled_sarimax = False
+                training_end_date_sarimax = pd.to_datetime(
+                    st.date_input("Training End Date for SARIMAX:", disabled=disabled_sarimax)
+                    )
             with col2_date:
+                training_end_date_lightgbm = pd.to_datetime(st.date_input("Training End Date for LightGBM:"))
                 if st.checkbox("Disable Training End Date For LightGBM?"):
                     disabled_lgbm = True
                 else:
-                    False
-                training_start_date_lightgbm = pd.to_datetime(st.date_input("Training Start Date for LightGBM:"),
-                                                              disabled=disabled_sarimax)
-                training_end_date_lightgbm = pd.to_datetime(st.date_input("Training End Date for LightGBM:"))
+                    disabled_lgbm = False
+                training_start_date_lightgbm = pd.to_datetime(
+                    st.date_input("Training Start Date for LightGBM:", disabled=disabled_lgbm)
+                )
 
             st.write("Test Start/End Dates:")
             col1_date_test, col2_date_test, col3_date_test = st.columns([1, 3, 1])
