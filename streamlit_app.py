@@ -150,8 +150,9 @@ def main():
                         pass
             st.write("Training Start/End Dates:")
             col1_date, col2_date = st.columns(2)
+            disabled_1 = False
             with col1_date:
-                training_start_date_sarimax = pd.to_datetime(st.date_input("Training Start Date for SARIMAX:"))
+                training_start_date_sarimax = pd.to_datetime(st.date_input("Training Start Date for SARIMAX:",disabled=disabled_1))
                 if st.checkbox("Disable Training End Date For SARIMAX?"):
                     disabled_sarimax = True
                 else:
@@ -160,7 +161,7 @@ def main():
                     st.date_input("Training End Date for SARIMAX:", disabled=disabled_sarimax)
                     )
             with col2_date:
-                training_end_date_lightgbm = pd.to_datetime(st.date_input("Training End Date for LightGBM:"))
+                training_end_date_lightgbm = pd.to_datetime(st.date_input("Training End Date for LightGBM:",disabled=disabled_1))
                 if st.checkbox("Disable Training End Date For LightGBM?"):
                     disabled_lgbm = True
                 else:
@@ -179,13 +180,14 @@ def main():
             analysis_flag = st.empty()
             b1_test, b2_test, b3_test = st.columns([2, 3, 2])
             with b2_test:
-                if st.button("Explanatory Data Analysis"):
+                if st.button("Explanatory Data Analysis",disabled = disabled_1):
                     analysis_flag.value = "EDA"
 
-                if st.button("Forecast the Future Cashflow!"):
+                if st.button("Forecast the Future Cashflow!",disabled = disabled_1):
                     analysis_flag.value = "Forecast"
 
         if analysis_flag.value == "EDA":
+            disabled_1 = True
             # Perform EDA and display results
             shell_data_eda = Shell_EDA(filepath=data_drive,
                                        train_set_name="eda_dataset.csv",
